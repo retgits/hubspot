@@ -48,7 +48,7 @@ func (t *Tickets) WithProperties(props []string) *Tickets {
 // any tickets in the response. If you want to get specific properties, you'll need to use the properties
 // parameter.
 func (t *Tickets) GetAllTickets() ([]Object, error) {
-	url := url(t, allTicketsEndpoint)
+	url := buildURL(t, allTicketsEndpoint)
 
 	res, err := t.Call(url, http.MethodGet, nil)
 	if err != nil {
@@ -65,6 +65,7 @@ func (t *Tickets) GetAllTickets() ([]Object, error) {
 
 	if temp.HasMore {
 		for {
+			url := buildURL(t, allTicketsEndpoint)
 			res, err := t.Call(url, http.MethodGet, nil)
 			if err != nil {
 				return nil, err
@@ -88,12 +89,12 @@ func (t *Tickets) GetAllTickets() ([]Object, error) {
 }
 
 // Construct the proper URL to call
-func url(t *Tickets, u string) string {
+func buildURL(t *Tickets, u string) string {
 	url := ""
 	url = fmt.Sprintf("%s?hapikey=%s", u, t.APIKey)
 
 	if t.OffSet > 0 {
-		url = fmt.Sprintf("%s&Offset=%d", url, t.OffSet)
+		url = fmt.Sprintf("%s&offset=%d", url, t.OffSet)
 	}
 
 	for idx := range t.Properties {

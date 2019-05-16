@@ -42,7 +42,7 @@ func (d *Deals) WithOffSet(offset int64) *Deals {
 
 // GetDeal returns an object representing the deal with the id :dealId associated with the specified account.
 func (d *Deals) GetDeal(dealID string) (Deal, error) {
-	url := url(d, fmt.Sprintf(getDealEndpoint, dealID))
+	url := buildURL(d, fmt.Sprintf(getDealEndpoint, dealID))
 
 	res, err := d.Call(url, http.MethodGet, nil)
 	if err != nil {
@@ -55,7 +55,7 @@ func (d *Deals) GetDeal(dealID string) (Deal, error) {
 // GetRecentlyModifiedDeals gets recently modified deals in an account sorted by their last modified date,
 // starting with the most recently modified deals.
 func (d *Deals) GetRecentlyModifiedDeals() ([]Result, error) {
-	url := url(d, getRecentDealsEndpoint)
+	url := buildURL(d, getRecentDealsEndpoint)
 
 	res, err := d.Call(url, http.MethodGet, nil)
 	if err != nil {
@@ -72,6 +72,7 @@ func (d *Deals) GetRecentlyModifiedDeals() ([]Result, error) {
 
 	if temp.HasMore {
 		for {
+			url := buildURL(d, getRecentDealsEndpoint)
 			res, err := d.Call(url, http.MethodGet, nil)
 			if err != nil {
 				return nil, err
@@ -98,7 +99,7 @@ func (d *Deals) GetRecentlyModifiedDeals() ([]Result, error) {
 // The map[string]string represents the new values for the contact, where the map key is the name of the property and the map
 // value is the new value
 func (d *Deals) UpdateDeal(dealID string, props map[string]string) error {
-	url := url(d, fmt.Sprintf(updateDealEndpoint, dealID))
+	url := buildURL(d, fmt.Sprintf(updateDealEndpoint, dealID))
 
 	properties := make([]Property, 0)
 
@@ -128,8 +129,13 @@ func (d *Deals) UpdateDeal(dealID string, props map[string]string) error {
 }
 
 // Construct the proper URL to call
-func url(d *Deals, u string) string {
+func buildURL(d *Deals, u string) string {
 	url := ""
 	url = fmt.Sprintf("%s?hapikey=%s", u, d.APIKey)
+
+	if d.OffSet > 0 {
+		url = fmt.Sprintf("%s&offset=%d", url, d.OffSet)
+	}
+
 	return url
 }

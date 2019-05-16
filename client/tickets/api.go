@@ -2,7 +2,9 @@
 // will be subject to bugs and breaking changes while under development.
 package tickets
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type HubSpotTickets struct {
 	Objects []Object `json:"objects"`

@@ -57,7 +57,7 @@ func (c *Contacts) WithProperties(props []string) *Contacts {
 
 // GetRecentlyUpdatedContacts returns, for a given account, all contacts that have been recently updated or created.
 func (c *Contacts) GetRecentlyUpdatedContacts() ([]Contact, error) {
-	url := url(c, recentlyUpdatedcontactsEndpoint)
+	url := buildURL(c, recentlyUpdatedcontactsEndpoint)
 
 	res, err := c.Call(url, http.MethodGet, nil)
 	if err != nil {
@@ -74,6 +74,7 @@ func (c *Contacts) GetRecentlyUpdatedContacts() ([]Contact, error) {
 
 	if temp.HasMore {
 		for {
+			url := buildURL(c, recentlyUpdatedcontactsEndpoint)
 			res, err := c.Call(url, http.MethodGet, nil)
 			if err != nil {
 				return nil, err
@@ -100,7 +101,7 @@ func (c *Contacts) GetRecentlyUpdatedContacts() ([]Contact, error) {
 // The map[string]string represents the new values for the contact, where the map key is the name of the property and the map
 // value is the new value
 func (c *Contacts) UpdateContact(contactID string, props map[string]string) error {
-	url := url(c, fmt.Sprintf(updateContactsEndpoint, contactID))
+	url := buildURL(c, fmt.Sprintf(updateContactsEndpoint, contactID))
 
 	properties := make([]Property, 0)
 
@@ -130,7 +131,7 @@ func (c *Contacts) UpdateContact(contactID string, props map[string]string) erro
 }
 
 // Construct the proper URL to call
-func url(c *Contacts, u string) string {
+func buildURL(c *Contacts, u string) string {
 	url := ""
 	url = fmt.Sprintf("%s?hapikey=%s", u, c.APIKey)
 

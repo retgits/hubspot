@@ -48,7 +48,7 @@ func (c *CRMAssociations) WithLimit(limit int64) *CRMAssociations {
 
 // GetAssociationsForCRMObject gets the IDs of objects associated with the given object, based on the specified association type.
 func (c *CRMAssociations) GetAssociationsForCRMObject(objectID string, definitionID string) ([]int64, error) {
-	url := url(c, fmt.Sprintf(associationsEndpoint, objectID, definitionID))
+	url := buildURL(c, fmt.Sprintf(associationsEndpoint, objectID, definitionID))
 
 	res, err := c.Call(url, http.MethodGet, nil)
 	if err != nil {
@@ -65,6 +65,7 @@ func (c *CRMAssociations) GetAssociationsForCRMObject(objectID string, definitio
 
 	if temp.HasMore {
 		for {
+			url := buildURL(c, fmt.Sprintf(associationsEndpoint, objectID, definitionID))
 			res, err := c.Call(url, http.MethodGet, nil)
 			if err != nil {
 				return nil, err
@@ -88,7 +89,7 @@ func (c *CRMAssociations) GetAssociationsForCRMObject(objectID string, definitio
 }
 
 // Construct the proper URL to call
-func url(c *CRMAssociations, u string) string {
+func buildURL(c *CRMAssociations, u string) string {
 	url := ""
 	url = fmt.Sprintf("%s?hapikey=%s", u, c.APIKey)
 
